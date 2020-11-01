@@ -1,6 +1,7 @@
 env
 
 .DS_Store
+*.sqlite
 
 .pytest_cache
 .vscode

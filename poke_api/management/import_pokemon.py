@@ -1,7 +1,10 @@
 import os
 from typing import Callable
 
-from poke_api.db.models import Pokemon
+from sqlalchemy import create_engine
+
+from poke_api.config import settings
+from poke_api.models.pokemon import Pokemon
 from poke_api.utils.csv_reader import CsvReader
 from poke_api.utils.helpers import cast_primitive_type as cast_type
 from poke_api.utils.modifiers import (
@@ -51,18 +54,35 @@ class ImportPokemon():
             custom_filter=is_valid_pokemon
         )
 
-        for pokemon_props in pokemons:
-            map_pokemon_properties(pokemon_props)
+        db_engine = create_engine(settings.DATABASE_URL)
 
-            pokemon = Pokemon(pokemon_props)
+        with db_engine.connect() as db_conn:
+            for pokemon_props in pokemons:
+                map_pokemon_properties(pokemon_props)
 
-            # handle a chain of modifiers (precedence matters in case mofifiers adjust same attribute)
-            pokemon_modifier = PokemonModifier(pokemon)
-            pokemon_modifier.add_modifier(SteelTypeModifier(pokemon))
-            pokemon_modifier.add_modifier(FireTypeModifier(pokemon))
-            pokemon_modifier.add_modifier(BugFlyingTypeModifier(pokemon))
-            pokemon_modifier.add_modifier(InitialGInNameModifier(pokemon))
-            pokemon_modifier.handle()
+                pokemon = Pokemon(**pokemon_props)
 
-            print("Name: ", pokemon.name.ljust(25, " "),
-                  "Type: ", pokemon.type)
+                # handle a chain of modifiers (precedence matters in case mofifiers adjust same attribute)
+                pokemon_modifier = PokemonModifier(pokemon)
+                pokemon_modifier.add_modifier(SteelTypeModifier(pokemon))
+                pokemon_modifier.add_modifier(FireTypeModifier(pokemon))
+                pokemon_modifier.add_modifier(BugFlyingTypeModifier(pokemon))
+                pokemon_modifier.add_modifier(InitialGInNameModifier(pokemon))
+                pokemon_modifier.handle()
+
+                # TODO: Add data cleaning methods before commiting
+
+                db_conn.execute(Pokemon.__table__.insert(), {
+                    "name": pokemon.name,
+                    "total": pokemon.total,
+                    "hp": pokemon.hp,
+                    "attack": pokemon.attack,
+                    "defense": pokemon.defense,
+                    "special_attack": pokemon.special_attack,
+                    "special_defense": pokemon.special_defense,
+                    "type_1": pokemon.type_1,
+                    "type_2": pokemon.type_2,
+                    "speed": pokemon.speed,
+                    "generation": pokemon.generation,
+                    "legendary": pokemon.legendary
+                })

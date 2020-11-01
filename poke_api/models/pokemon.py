@@ -1,4 +1,5 @@
 from enum import Enum
+from . import db
 
 
 class PokemonType(Enum):
@@ -21,7 +22,22 @@ class PokemonType(Enum):
     Water = 17
 
 
-class BasePokemon:
+class Pokemon(db.Model):
+
+    __tablename__ = 'Pokemon'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), unique=True)
+    hp = db.Column(db.Integer)
+    type_1 = db.Enum(PokemonType)
+    type_2 = db.Enum(PokemonType)
+    attack = db.Column(db.Integer)
+    defense = db.Column(db.Integer)
+    special_attack = db.Column(db.Integer)
+    special_defense = db.Column(db.Integer)
+    speed = db.Column(db.Integer)
+    generation = db.Column(db.Integer)
+    legendary = db.Column(db.Boolean)
 
     def __init__(self, name='', type_1='', type_2='', total=0, hp=0, attack=0,
                  defense=0, special_attack=0, special_defense=0, speed=0,
@@ -61,9 +77,3 @@ class BasePokemon:
         if self.secondary_type:
             return (self.primary_type, self.secondary_type)
         return self.primary_type,
-
-
-class Pokemon(BasePokemon):
-
-    def __init__(self, pokemon_data: dict, *args, **kwargs):
-        super(Pokemon, self).__init__(**pokemon_data)

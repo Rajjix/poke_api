@@ -15,6 +15,9 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--path', type=str,
                         required='import_pokemon' in sys.argv, help='path to csv file containing pokemon data')
 
+    parser.add_argument('--keep-existing', const=True,
+                        default=False, nargs='?', help='keep existing pokemon')
+
     args = parser.parse_args()
 
     if not args.command in commands.keys():
