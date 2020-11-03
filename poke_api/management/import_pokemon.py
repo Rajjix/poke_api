@@ -80,8 +80,8 @@ class ImportPokemon():
                     "defense": pokemon.defense,
                     "special_attack": pokemon.special_attack,
                     "special_defense": pokemon.special_defense,
-                    "type_1": pokemon.type_1,
-                    "type_2": pokemon.type_2,
+                    "type_1": pokemon.primary_type,
+                    "type_2": pokemon.secondary_type,
                     "speed": pokemon.speed,
                     "generation": pokemon.generation,
                     "legendary": pokemon.legendary
