@@ -3,7 +3,8 @@ from .utils.response import success_response
 from .models import db
 from .models.migrate import run_migrations
 from .config import settings
-from .search import search_me
+from .search import LHSParser, NameParser, PokemonQueryModel
+
 
 pokemon_bp = Blueprint('pokemon', __name__)
 
@@ -18,11 +19,14 @@ def ping():
 
 @pokemon_bp.route('/pokemon')
 def get_pokemon():
-    request_arguments = {k.lower(): v for k, v in request.args.items()}
+    query = {k.lower(): v for k, v in request.args.items()}
+
+    base_query_object = LHSParser(query) & NameParser(query)
+    query_model = PokemonQueryModel(query_object)
+
     result = {
         "msg": "Hello, Pokemon!"
     }
-    # result = search_me(request_arguments)
     return success_response(result)
 
 

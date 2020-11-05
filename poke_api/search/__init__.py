@@ -1,1 +1,2 @@
-from .search_model import search_me
+from .parsers import LHSParser, NameParser
+from .search_models import PokemonQueryModel
