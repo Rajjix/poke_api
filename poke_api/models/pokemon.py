@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from enum import Enum
 from . import db
 
@@ -77,3 +78,13 @@ class Pokemon(db.Model):
         if self.secondary_type:
             return (self.primary_type, self.secondary_type)
         return self.primary_type,
+
+    @property
+    def to_python(self):
+        public_attributes = ["id", "name", "attack",
+                             "defense", "hp", "primary_type",
+                             "secondary_type", "speed",
+                             "special_attack", "special_defense",
+                             "generation", "legendary"]
+
+        return OrderedDict([k, getattr(self, k)] for k in public_attributes)

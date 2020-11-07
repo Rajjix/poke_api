@@ -45,7 +45,7 @@ class LHSParser(BaseParser):
         1 - we support the provided query attribute (for example attack, defense, etc...)
         2 - given operator is valid. (lt, gt, eq, etc...)
         """
-        supported_patterns = (f"^(.+)(\[({('|').join(self.operators)})\])$")
+        supported_patterns = (fr"^(.+)(\[({('|').join(self.operators)})\])$")
 
         match = re.search(supported_patterns, lhs_key)
 
